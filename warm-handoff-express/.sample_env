@@ -1,0 +1,9 @@
+AWS_SECRET_KEY=fake_secret
+AWS_ACCESS_KEY_ID=fake_key_id
+
+TWILIO_AUTH_KEY=fake_auth_key
+TWILIO_SID=fake_ssid
+TWILIO_PHONE_NUMBER=+11234567890
+
+HOST=host_url
+PORT=port_number
