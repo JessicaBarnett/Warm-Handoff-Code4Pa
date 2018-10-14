@@ -25,6 +25,7 @@ module.exports.create = (event, context, callback) => {
             address: body.address,
             created_at: timestamp,
             updated_at: timestamp,
+            job_history: [],
             status: 'unavailable'
         }
     }
@@ -52,7 +53,7 @@ module.exports.list = (event, context, callback) => {
 
     dynamoDb.scan(params, (error, result) => {
         if (error) {
-            console.log(error);
+            console.error(error);
             callback(new Error('couldn\'t fetch CRS list.'));
             return;
         }
@@ -64,3 +65,51 @@ module.exports.list = (event, context, callback) => {
         callback(null, response)
     });
 };
+
+module.exports.get = (event, context, callback) => {
+    const params = {
+        TableName: 'recovery_specialists_table_2',
+        Key: {
+            id: event.pathParameters.id
+        }
+    }
+
+    dynamoDb.get(params, (error, result) => {
+        if (error) {
+            console.error(error);
+            callback(new Error('couldn\'t get CRS'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(result.Item)
+        }
+
+        callback(null, response);
+    });
+}
+
+module.exports.delete = (event, context, callback) => {
+    var params = {
+        Key: {
+          id: event.pathParameters.id
+        },
+        TableName: 'recovery_specialists_table_2'
+      };
+
+      dynamoDb.delete(params, function(error, result) {
+        if (error) {
+            console.error(error);
+            callback(new Error('failed to delete CRS'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify('successfully deleted CRS.')
+        }
+
+        callback(null, response);
+      });
+}

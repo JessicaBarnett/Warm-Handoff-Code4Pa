@@ -17,7 +17,7 @@ module.exports.create = (event, context, callback) => {
         TableName: 'jobs_table_2',
         Item: {
             id: uuid(),
-            requested_by_number: body.from_phone_number,
+            requested_by_number: body.requested_by_number,
             facility: body.facility,
             status: 'pending',
             created_at: timestamp,
@@ -48,7 +48,7 @@ module.exports.list = (event, context, callback) => {
 
     dynamoDb.scan(params, (error, result) => {
         if (error) {
-            console.log(error);
+            console.error(error);
             callback(new Error('couldn\'t fetch job list.'));
             return;
         }
@@ -60,3 +60,52 @@ module.exports.list = (event, context, callback) => {
         callback(null, response)
     });
 };
+
+
+module.exports.get = (event, context, callback) => {
+    const params = {
+        TableName: 'jobs_table_2',
+        Key: {
+            id: event.pathParameters.id
+        }
+    }
+
+    dynamoDb.get(params, (error, result) => {
+        if (error) {
+            console.error(error);
+            callback(new Error('couldn\'t get Job'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(result.Item)
+        }
+
+        callback(null, response);
+    });
+}
+
+module.exports.delete = (event, context, callback) => {
+    var params = {
+        Key: {
+          id: event.pathParameters.id
+        },
+        TableName: 'jobs_table_2'
+      };
+
+      dynamoDb.delete(params, function(error, result) {
+        if (error) {
+            console.error(error);
+            callback(new Error('failed to delete job'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify('successfully deleted job.')
+        }
+
+        callback(null, response);
+      });
+}

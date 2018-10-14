@@ -22,7 +22,7 @@
         name: "Thomas Jefferson University Hospital",
         address: "123 street rd, philadelphia pa 10102",
         phone_number: "+19999999999",
-        request_history: ["request_0000000000", "request_1111111111", "request_2222222222"]
+        job_history: ["request_0000000000", "request_1111111111", "request_2222222222"]
     }
 ```
 
@@ -35,7 +35,7 @@
         phone_number: "+17777777777",
         address: "123 street road, Philadelphia PA, 12345",
         last_called: "datetime",
-        status: "on-call|unavailable|dispatched",
-        request_history: ["request_0000000000", "request_1111111111", "request_2222222222"]
+        status: "available|unavailable|dispatched",
+        job_history: ["request_0000000000", "request_1111111111", "request_2222222222"]
     }
 ```
