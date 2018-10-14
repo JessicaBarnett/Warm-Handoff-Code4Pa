@@ -7,8 +7,7 @@ module.exports.create = (event, context, callback) => {
     const timestamp = new Date().getTime();
     const body = JSON.parse(event.body);
 
-    if ( typeof body.name !==  'string' || typeof body.phone_number !==  'string' ||
-         typeof body.address !==  'string' ) {
+    if ( typeof body.facility_name !==  'string' || typeof body.phone_number !==  'string' || typeof body.address !==  'string' ) {
         console.error(error);
         callback(new Error('failed to create Facility'));
         return;
@@ -18,7 +17,7 @@ module.exports.create = (event, context, callback) => {
         TableName: 'facilities_table_2',
         Item: {
             id: uuid(),
-            name: body.name,
+            facility_name: body.facility_name,
             phone_number: body.phone_number,
             address: body.address,
             created_at: timestamp,
@@ -87,7 +86,7 @@ module.exports.get = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-    var params = {
+    const params = {
         Key: {
           id: event.pathParameters.id
         },
@@ -108,4 +107,47 @@ module.exports.delete = (event, context, callback) => {
 
         callback(null, response);
       });
+}
+
+// Requires ALL fields to be passed in via body.
+// Not ideal, but patch updates were a pain...  Need to sort that out later.
+module.exports.update = (event, context, callback) => {
+    const timestamp = new Date().getTime();
+    const body = JSON.parse(event.body);
+
+    if ( typeof body.facility_name !==  'string' ||
+         typeof body.phone_number !==  'string' ||
+         typeof body.address !==  'string' ||
+         typeof body.created_at !== 'number' ) {
+        console.error(error);
+        callback(new Error('failed validation'));
+        return;
+    }
+
+    const params = {
+        TableName: 'facilities_table_2',
+        Item: {
+            id: event.pathParameters.id,
+            facility_name: body.facility_name,
+            phone_number: body.phone_number,
+            address: body.address,
+            created_at: body.created_at,
+            updated_at: timestamp
+        }
+    }
+
+    dynamoDb.put(params, (error, result) => {
+        if (error) {
+            console.error(error);
+            callback(new Error('failed to update facility'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify('successfully updated facility')
+        }
+
+        callback(null, response);
+    });
 }

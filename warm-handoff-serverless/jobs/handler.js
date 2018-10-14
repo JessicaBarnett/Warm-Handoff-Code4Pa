@@ -87,7 +87,7 @@ module.exports.get = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-    var params = {
+    const params = {
         Key: {
           id: event.pathParameters.id
         },
@@ -108,4 +108,50 @@ module.exports.delete = (event, context, callback) => {
 
         callback(null, response);
       });
+}
+
+// Requires ALL fields to be passed in via body.
+// Not ideal, but patch updates were a pain...  Need to sort that out later.
+// All that should ever change for this one is status, updated_at, and job history
+module.exports.update = (event, context, callback) => {
+    const timestamp = new Date().getTime();
+    const body = JSON.parse(event.body);
+
+    if (typeof body.requested_by_number !== 'string' ||
+        typeof body.facility !== 'object' ||
+        typeof body.status !== 'string' ||
+        typeof body.created_at !== 'number' ||
+        Array.isArray(body.job_history)) {
+        console.error(error);
+        callback(new Error('failed validation'));
+        return;
+    }
+
+    const params = {
+        TableName: 'recovery_specialists_table_2',
+        Item: {
+            id: event.pathParameters.id,
+            requested_by_number: body.requested_by_number,
+            facility: body.facility,
+            status: body.status,
+            created_at: body.created_at,
+            updated_at: timestamp,
+            job_history: body.job_history
+        }
+    }
+
+    dynamoDb.put(params, (error, result) => {
+        if (error) {
+            console.error(error);
+            callback(new Error('failed to update Job'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify('successfully updated Job')
+        }
+
+        callback(null, response);
+    });
 }

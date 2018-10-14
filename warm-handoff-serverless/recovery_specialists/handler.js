@@ -2,7 +2,6 @@
 const uuid = require('uuid/v1');
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
-// const validator = require('./utils/validator');
 
 module.exports.create = (event, context, callback) => {
     const timestamp = new Date().getTime();
@@ -91,7 +90,7 @@ module.exports.get = (event, context, callback) => {
 }
 
 module.exports.delete = (event, context, callback) => {
-    var params = {
+    const params = {
         Key: {
           id: event.pathParameters.id
         },
@@ -112,4 +111,53 @@ module.exports.delete = (event, context, callback) => {
 
         callback(null, response);
       });
+}
+
+// Requires ALL fields to be passed in via body.
+// Not ideal, but patch updates were a pain...  Need to sort that out later.
+module.exports.update = (event, context, callback) => {
+    const timestamp = new Date().getTime();
+    const body = JSON.parse(event.body);
+
+    if ( typeof body.first_name !==  'string' ||
+         typeof body.last_name !==  'string' ||
+         typeof body.phone_number !==  'string' ||
+         typeof body.address !==  'string' ||
+         typeof body.status !== 'string' ||
+         typeof body.created_at !== 'number' ||
+         Array.isArray(body.job_history)) {
+        console.error(error);
+        callback(new Error('failed validation'));
+        return;
+    }
+
+    const params = {
+        TableName: 'recovery_specialists_table_2',
+        Item: {
+            id: event.pathParameters.id,
+            first_name: body.first_name,
+            last_name: body.last_name,
+            phone_number: body.phone_number,
+            address: body.address,
+            status: body.status,
+            created_at: body.created_at,
+            updated_at: timestamp,
+            job_history: body.job_history
+        }
+    }
+
+    dynamoDb.put(params, (error, result) => {
+        if (error) {
+            console.error(error);
+            callback(new Error('failed to update CRS'));
+            return;
+        }
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify('successfully updated CRS')
+        }
+
+        callback(null, response);
+    });
 }

@@ -19,7 +19,7 @@
 ```json
     {
         id: "facility_0000000000",
-        name: "Thomas Jefferson University Hospital",
+        facility_name: "Thomas Jefferson University Hospital",
         address: "123 street rd, philadelphia pa 10102",
         phone_number: "+19999999999",
         job_history: ["request_0000000000", "request_1111111111", "request_2222222222"]

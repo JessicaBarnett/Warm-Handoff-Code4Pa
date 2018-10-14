@@ -46,13 +46,19 @@ functions:
             path: recovery_specialists/{id}
             method: get
             cors: true
-
   delete_recovery_specialist:
       handler: recovery_specialists/handler.delete
       events:
         - http:
             path: recovery_specialists/{id}
             method: delete
+            cors: true
+  update_recovery_specialist:
+      handler: recovery_specialists/handler.update
+      events:
+        - http:
+            path: recovery_specialists/{id}
+            method: post
             cors: true
 
 #####################
@@ -87,6 +93,13 @@ functions:
             path: facilities/{id}
             method: delete
             cors: true
+  update_facility:
+      handler: facilities/handler.update
+      events:
+        - http:
+            path: facilities/{id}
+            method: post
+            cors: true
 
 #####################
 ## JOBS CRUD
@@ -120,6 +133,14 @@ functions:
             path: jobs/{id}
             method: delete
             cors: true
+  update_job:
+      handler: jobs/handler.update
+      events:
+        - http:
+            path: jobs/{id}
+            method: post
+            cors: true
+
 
 resources:
   Resources:
