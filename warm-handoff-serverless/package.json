@@ -1,0 +1,11 @@
+{
+  "name": "warm-handoff-serverless",
+  "version": "1.0.0",
+  "dependencies": {
+    "aws-sdk": "^2.334.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "serverless": "^1.32.0"
+  }
+}
