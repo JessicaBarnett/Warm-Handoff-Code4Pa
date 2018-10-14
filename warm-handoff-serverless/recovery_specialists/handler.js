@@ -16,7 +16,7 @@ module.exports.create = (event, context, callback) => {
     }
 
     const params = {
-        TableName: 'crs_table',
+        TableName: 'recovery_specialists_table_2',
         Item: {
             id: uuid(),
             first_name: body.first_name,
@@ -44,3 +44,23 @@ module.exports.create = (event, context, callback) => {
         callback(null, response);
     });
 }
+
+module.exports.list = (event, context, callback) => {
+    const params = {
+        TableName: 'recovery_specialists_table_2'
+    };
+
+    dynamoDb.scan(params, (error, result) => {
+        if (error) {
+            console.log(error);
+            callback(new Error('couldn\'t fetch CRS list.'));
+            return;
+        }
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(result.Items)
+        };
+
+        callback(null, response)
+    });
+};

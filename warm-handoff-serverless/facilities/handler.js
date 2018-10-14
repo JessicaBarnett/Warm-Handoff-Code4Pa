@@ -15,7 +15,7 @@ module.exports.create = (event, context, callback) => {
     }
 
     const params = {
-        TableName: 'facility_table',
+        TableName: 'facilities_table_2',
         Item: {
             id: uuid(),
             name: body.name,
@@ -41,3 +41,23 @@ module.exports.create = (event, context, callback) => {
         callback(null, response);
     });
 }
+
+module.exports.list = (event, context, callback) => {
+    const params = {
+        TableName: 'facilities_table_2'
+    };
+
+    dynamoDb.scan(params, (error, result) => {
+        if (error) {
+            console.log(error);
+            callback(new Error('couldn\'t fetch facility list.'));
+            return;
+        }
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(result.Items)
+        };
+
+        callback(null, response)
+    });
+};

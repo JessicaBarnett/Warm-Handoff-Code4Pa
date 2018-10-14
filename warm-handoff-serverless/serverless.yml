@@ -20,32 +20,69 @@ provider:
       Resource: "arn:aws:dynamodb:us-east-1:*:*"
 
 functions:
-  create_crs:
-    handler: crs/handler.create
+
+##############################
+## RECOVERY SPECIALISTS CRUD
+##############################
+  create_recovery_specialists:
+    handler: recovery_specialists/handler.create
     events:
       - http:
-          path: crs
-          method: post
-          cors: true # need to enable cors for dynamo
-  create_facility:
-    handler: facility/handler.create
-    events:
-      - http:
-          path: facility
-          method: post
-          cors: true
-  create_job:
-    handler: job/handler.create
-    events:
-      - http:
-          path: job
+          path: recovery_specialists
           method: post
           cors: true
 
+  list_recovery_specialists:
+      handler: recovery_specialists/handler.list
+      events:
+        - http:
+            path: recovery_specialists
+            method: get
+            cors: true
+
+#####################
+## FACILITIES CRUD
+#####################
+  create_facility:
+    handler: facilities/handler.create
+    events:
+      - http:
+          path: facilities
+          method: post
+          cors: true
+  list_facilities:
+      handler: facilities/handler.list
+      events:
+        - http:
+            path: facilities
+            method: get
+            cors: true
+
+#####################
+## JOBS CRUD
+#####################
+
+  create_job:
+    handler: jobs/handler.create
+    events:
+      - http:
+          path: jobs
+          method: post
+          cors: true
+  list_jobs:
+      handler: jobs/handler.list
+      events:
+        - http:
+            path: jobs
+            method: get
+            cors: true
 
 resources:
   Resources:
-    CrsDynamoDbTable:
+    # Note: The '2' in the table names is because I tore down the app and rebuilt it.  And then when I tried to redeploy,
+    # it complained that the tables already exist.  Have yet to sort it out...
+    # Seems to be a known issue w/ serverless:  https://github.com/serverless/serverless/issues/3183
+    RecoverySpecialistsDynamoDbTable2:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain # means that your data won't be lost if your app is torn down
       Properties:
@@ -61,9 +98,9 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName:
-          'crs_table'
+          'recovery_specialists_table_2'
 
-    FacilityDynamoDbTable:
+    FacilitiesDynamoDbTable2:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
@@ -79,10 +116,10 @@ resources:
           ReadCapacityUnits: 100
           WriteCapacityUnits: 100
         TableName:
-          'facility_table'
+          'facilities_table_2'
 
 
-    JobsDynamoDbTable:
+    JobsDynamoDbTable2:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
@@ -98,4 +135,4 @@ resources:
           ReadCapacityUnits: 20
           WriteCapacityUnits: 20
         TableName:
-          'jobs_table'
+          'jobs_table_2'
