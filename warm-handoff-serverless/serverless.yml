@@ -17,13 +17,47 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:dynamodb:us-east-1:*:*
+        - arn:aws:lambda:us-east-1:*:*
+
+plugins:
+  - serverless-dotenv-plugin
 
 functions:
+## VOICE & SMS
+  call:
+    handler: voice/handler.call
+    events:
+      - http:
+          path: voice/call
+          method: post
 
-##############################
+## DEMO
+  demo_start:
+    handler: demo/handler.start
+    events:
+      - http:
+          path: demo/start
+          method: post
+
+## IVR
+  ivr_start:
+    handler: ivr/handler.start
+    events:
+      - http:
+          path: ivr/start
+          method: post
+
+  ivr_availability:
+    handler: ivr/handler.availability
+    events:
+      - http:
+          path: ivr/availability
+          method: post
+
 ## RECOVERY SPECIALISTS CRUD
-##############################
   create_recovery_specialists:
     handler: recovery_specialists/handler.create
     events:
@@ -61,9 +95,7 @@ functions:
             method: post
             cors: true
 
-#####################
 ## FACILITIES CRUD
-#####################
   create_facility:
     handler: facilities/handler.create
     events:
@@ -101,10 +133,7 @@ functions:
             method: post
             cors: true
 
-#####################
 ## JOBS CRUD
-#####################
-
   create_job:
     handler: jobs/handler.create
     events:
