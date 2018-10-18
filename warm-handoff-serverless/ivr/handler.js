@@ -1,5 +1,16 @@
-// const _ = require('lodash');
+const _ = require('lodash');
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
+const queryString = require('query-string');
+
+// hard-coded for demo purposes
+const demoFacility =  {
+    "phone_number": "+19999999999",
+    "updated_at": 1539553745249,
+    "created_at": 1539553745249,
+    "address": "132 S 10th St, Philadelphia, PA 19107",
+    "id": "f87cc420-cffa-11e8-98bb-05afd009eca8",
+    "facility_name": "Jefferson University Hospital"
+};
 
 
 /******************
@@ -49,20 +60,26 @@ module.exports.test = (event, context, callback) => {
     callback(null, response);
 }
 
+// Event comes from twilio
+// Seem to be getting a uri-encoded string from event.body when it's called by twilio...
+// but stringified json fron anywhere else...
 module.exports.start = (event, context, callback) => {
-    const body = JSON.parse(event.body);
-    const twiml;
+    var twiml;
+    var body;
+    var facility = _.clone(demoFacility);
 
-    if (typeof body.facility !== 'object' || typeof body.facility.address !== 'string') {
-        console.error('invalid facility object');
-        callback(new Error('invalid facility information'));
-        return;
+    // to account for twilip sending us a uri-encoded query string as the body. :P
+    // also technically I don't think I need anything in here...  'cept maybe the 'called' numbers
+    if (event.headers && event.headers['Content-Type'].includes('application/x-www-form-urlencoded')) {
+        body = queryString.parse(decodeURIComponent(event.body));
+    } else {
+        body = JSON.parse(event.body);
     }
 
     twiml = getTwimlResponse(
         `${process.env.TWILIO_HOST}/ivr/availability`,
         `Hello.  This is the CRS dispatch system.
-         A CRS is needed at ${body.facility.address}.
+         A CRS is needed at ${facility.facility_name}.
          Are you available to respond to this request?
          Please press (1) for yes or (2) for no.`,
          {numDigits: '1'}
@@ -84,13 +101,13 @@ module.exports.start = (event, context, callback) => {
 module.exports.availability = (event, context, callback) => {
     const body = JSON.parse(event.body);
     const digit = event.digit;
-    const twiml;
+    var twiml;
 
     if (digit === '1') {
         twiml = accept();
     } else if (digit === '2') {
         twiml = decline();
-    }
+    }a
 
     const response = {
         statusCode: 200,

@@ -1,0 +1,15 @@
+parserOptions:
+  ecmaVersion: 6
+# comma-dangle: ["error", "never"]
+# object-curly-spacing: "always"
+# require-jsdoc:
+#   require:
+#     FunctionDeclaration: false
+#     MethodDefinition: false
+#     ClassDeclaration: false
+#     ArrowFunctionExpression: false
+#     FunctionExpression: false
+
+# max-len:
+#   ignoreComments: true
+#   ignoreTrailingComments: true
